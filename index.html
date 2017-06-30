@@ -1,1 +1,49 @@
-Hello World
+<style>
+	#game {
+		display: flex;
+		flex-wrap: wrap;
+		width: 240px;
+		cursor: pointer;
+		border: 1px solid black;
+	}
+	.box {
+		height: 28px;
+		width: 28px;
+		border: 1px solid black;
+		background-color: ccc;
+	}
+	.red {
+		background-color: red;
+	}
+	.disable-clicks {
+		pointer-events: none;
+	}
+</style>
+
+<h1>Hello World<h1>
+
+<div id="game">
+</div>
+
+<script>
+
+	var board = document.getElementById("game");
+	
+	for (var i = 0; i < 64; i++) {
+		var box = document.createElement('div');
+		box.className = "box";
+		box.setAttribute('data-index', i)
+		box.onclick = boxClicked
+		board.appendChild(box);
+	}
+	
+	
+	function boxClicked(event) {
+		var box = event.target
+		box.classList.add("red");
+		box.classList.add("disable-clicks");
+		box.textContent = box.getAttribute('data-index')
+		console.log(box.getAttribute('data-index')); 
+	};
+	
+</script>
