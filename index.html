@@ -18,6 +18,9 @@
 	.blue {
 		background-color: blue;
 	}
+  .bomb {
+    background-color: red;
+  }
 	.disable-clicks {
 		pointer-events: none;
 	}
@@ -36,6 +39,7 @@
   1 - Clicked, safe
   2 - Flagged
   */
+  const BOMBED_CELL_STATE = -1
   const DEFAULT_CELL_STATE = 0
   const CLICKED_CELL_STATE = 1
   const FLAGGED_CELL_STATE = 2
@@ -46,6 +50,15 @@
   var rows = 15
   var columns = 30
   var numberOfCells = rows*columns
+  var numberOfMines = Math.floor(numberOfCells/4)
+  var mines = new Set();
+  
+  while (mines.size < numberOfMines) {
+    mines.add(getRandomInt(0,numberOfCells))
+  }
+    
+  console.log(numberOfCells)
+  console.log(mines)
   
   var boardWidth = columns * boxSize  
   board.setAttribute("style","width:"+ boardWidth +"px")
@@ -58,6 +71,7 @@
   		box.className = "box";
   		box.setAttribute('data-index', i)
       box.setAttribute('data-state', DEFAULT_CELL_STATE)
+      box.setAttribute('data-bomb', getBombNeighboursCount(i))
   		box.onclick = boxClicked
       box.oncontextmenu = boxRightClicked
   		board.appendChild(box)
@@ -66,17 +80,28 @@
 	
 	function boxClicked(event) {
 		var box = event.target
-    var index = box.getAttribute('data-index')
-    var state = box.getAttribute('data-state')
-
-		if (state == DEFAULT_CELL_STATE) {
-      // only allow click event for default cell state
-      box.textContent = state
-      box.setAttribute('data-state', CLICKED_CELL_STATE)
-      box.classList.add("fade")
-		}
+    processboxClicked(box)
 		console.log("LC: " + box.getAttribute('data-index'))
 	};
+  
+  function processboxClicked(box) {
+    var index = parseInt(box.getAttribute('data-index'))
+    var state = box.getAttribute('data-state')
+    
+		if (state == DEFAULT_CELL_STATE) {
+      // only allow click event for default cell state
+      if (mines.has(index)) {
+        // clicked on bomb!
+        box.setAttribute('data-state', BOMBED_CELL_STATE)
+        box.classList.add("bomb")
+      } else {
+        // did not click on bomb
+        box.textContent = box.getAttribute('data-bomb')
+        box.setAttribute('data-state', CLICKED_CELL_STATE)
+        box.classList.add("fade")
+      }
+		}
+  }
 	
   function boxRightClicked(event) {
 		var box = event.target
@@ -96,5 +121,72 @@
 		console.log("RC: " + box.getAttribute('data-index'))
     return false 
   };
+  
+  function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min; 
+    //The maximum is exclusive and the minimum is inclusive
+  }
+  
+  function getBombNeighboursCount(index) {
+    var neighbours = getNeighbours(index)
+    var count = 0
+    
+    neighbours.forEach(function(value, key, set) {
+      if (mines.has(value)) 
+        count++
+    })
+    
+    return count
+  }
+  
+  function getNeighbours(index) {
+    //returns a set of index of the cell's neighbours    
+    var left = index-1
+    var right = index+1
+    var up = index-columns
+    var down = index+columns
+    
+    var topLeft = up-1
+    var topRight = up+1
+    var bottomLeft = down-1
+    var bottomRight = down+1
+    
+    var neighbours = new Set([left, right, up, down,
+      topLeft, topRight, bottomLeft, bottomRight])
+    
+    if (index%columns == 0) {
+      // on the left edge, remove left indexes
+      neighbours.delete(topLeft)
+      neighbours.delete(left)
+      neighbours.delete(bottomLeft)
+    }
+    
+    if (index%columns == columns-1) {
+      // on the right edge, remove right indexes
+      neighbours.delete(topRight)
+      neighbours.delete(right)
+      neighbours.delete(bottomRight)
+    }
+    
+    // for top and bottom edge, their top and bottom will be out of bounds, 
+    // not really necessary to delete the indexes   
+    if (index < columns) {
+      // on the top edge, remove top indexes
+      neighbours.delete(topLeft)
+      neighbours.delete(up)
+      neighbours.delete(topRight)
+    }
+    
+    if (index >= numberOfCells-columns) {
+      // on the bottom edge, remove bottom indexes
+      neighbours.delete(bottomLeft)
+      neighbours.delete(down)
+      neighbours.delete(bottomRight)
+    }
+    
+    return neighbours
+  }
   
 </script>
