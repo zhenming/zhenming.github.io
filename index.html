@@ -1,4 +1,7 @@
 <style>
+  p {
+    font-size: 16px;
+  }
 	#game {
 		display: flex;
 		flex-wrap: wrap;
@@ -14,13 +17,19 @@
     font-size: 24px;
     text-align: center;
 	}
-	.fade {
+	.blue {
+	  color: blue;
+	}
+	.red {
+	  color: red;
+	}
+  .bg-fade {
 		background-color: white;
 	}
-	.blue {
+	.bg-blue {
 		background-color: blue;
 	}
-  .bomb {
+  .bg-bomb {
     background-color: red;
   }
 	.disable-clicks {
@@ -28,9 +37,19 @@
 	}
 </style>
 
-<h1>Hello World<h1>
-
-<h3>Number of Mines: <span id="mine-no"></span></h3>
+<h1>Minesweeper<h1>
+<p>
+  There are <span id="mine-no"></span> mines. <br>
+  Right click to <span class="blue">flag</span> a mine. <br>
+  Right click again to undo the <span class="blue">flag</span>. <br>
+  <span class="red">Red</span> means you clicked on a <span class="red">mine</span>! <br>
+  You can carry on playing after clicking a <span class="red">mine</span>.
+</p>
+<h3>
+  Mines Remaining: <span id="mine-remain"></span> 
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+  Time: <span id="timer"></span> 
+</h3>
 
 <div id="game">
 </div>
@@ -50,15 +69,27 @@
   
 	var board = document.getElementById("game")	
 	var mineNumberElement = document.getElementById("mine-no")	
+  var mineRemainElement = document.getElementById("mine-remain")	
+  var timerElement = document.getElementById("timer")	
+  
   var boxSize = 30
-
   var rows = 15
   var columns = 30
   var numberOfCells = rows*columns
-  var numberOfMines = Math.floor(numberOfCells/4)
-  mineNumberElement.textContent = numberOfMines
-  var mines = new Set();
+  var numberOfMines = Math.floor(numberOfCells/5)
   
+  var cellsToClear = numberOfCells - numberOfMines
+  var cellsCleared = 0
+  var minesActivated = 0
+  var minesRemaining = numberOfMines
+  var timeElapsed = 0
+  var timer = null
+  
+  mineNumberElement.textContent = numberOfMines
+  mineRemainElement.textContent = minesRemaining
+  timerElement.textContent = timeElapsed
+  
+  var mines = new Set();
   while (mines.size < numberOfMines) {
     mines.add(getRandomInt(0,numberOfCells))
   }
@@ -82,6 +113,8 @@
       box.oncontextmenu = boxRightClicked
   		board.appendChild(box)
   	}
+    board.addEventListener('click', startTimer)
+    board.addEventListener('contextmenu', startTimer)
   }
 	
 	function boxClicked(event) {
@@ -94,6 +127,27 @@
     return parseInt(box.id.substring(5))
   }
   
+  function updateMinesRemaining(value) {
+    minesRemaining += value
+    mineRemainElement.textContent = minesRemaining
+  }
+  
+  function updateCellsCleared(value) {
+    cellsCleared += value
+    if (cellsCleared == cellsToClear) {
+      // all cells cleared, game completed!
+      stopTimer()
+      setTimeout(function() {
+        alert("Game Completed! \nTime taken: " + timeElapsed + "s \nMines activated: " + minesActivated)
+      }, 1000)
+    }
+  }
+  
+  function updateTimer(value) {
+    timeElapsed += value
+    timerElement.textContent = timeElapsed
+  }
+  
   function processboxClicked(box) {
     var index = getCellID(box)
     var state = box.getAttribute('data-state')
@@ -103,12 +157,15 @@
       if (mines.has(index)) {
         // clicked on bomb!
         box.setAttribute('data-state', BOMBED_CELL_STATE)
-        box.classList.add("bomb")
+        box.classList.add("bg-bomb")
+        // update mines remaining
+        updateMinesRemaining(-1)
+        minesActivated++
       } else {
         // did not click on bomb
         var bombNeighbours = box.getAttribute('data-bomb')
         box.setAttribute('data-state', CLICKED_CELL_STATE)
-        box.classList.add("fade")
+        box.classList.add("bg-fade")
         if (bombNeighbours == 0) {
           // no bomb neighbours, simulate clicking neighbours
           var neighbours = getNeighbours(index)
@@ -119,6 +176,7 @@
           // fill in the number of bomb neighbours
           box.textContent = bombNeighbours
         }
+        updateCellsCleared(1)
       }
 		}
   }
@@ -131,11 +189,15 @@
 		if (state == DEFAULT_CELL_STATE) {
       // box.textContent = index
       box.setAttribute('data-state', FLAGGED_CELL_STATE)
-      box.classList.add("blue")
+      box.classList.add("bg-blue")
+      // update mines remaining
+      updateMinesRemaining(-1)
 		} else if (state == FLAGGED_CELL_STATE) {
       box.textContent = ''
       box.setAttribute('data-state', DEFAULT_CELL_STATE)
-      box.classList.remove("blue")
+      box.classList.remove("bg-blue")
+      // update mines remaining
+      updateMinesRemaining(1)
 		}
 		
 		console.log("RC: " + box.id)
@@ -207,6 +269,20 @@
     }
     
     return neighbours
+  }
+  
+  function startTimer() {
+    if (timer === null) {
+      timer = setInterval(function(){ 
+        updateTimer(1) 
+      }, 1000)
+    }
+    board.removeEventListener('click', startTimer)
+    board.removeEventListener('contextmenu', startTimer)
+  }
+  
+  function stopTimer() {
+    clearInterval(timer)
   }
   
 </script>
