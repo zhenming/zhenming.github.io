@@ -11,6 +11,8 @@
 		width: 28px;
 		border: 1px solid black;
 		background-color: ccc;
+    font-size: 24px;
+    text-align: center;
 	}
 	.fade {
 		background-color: white;
@@ -27,6 +29,8 @@
 </style>
 
 <h1>Hello World<h1>
+
+<h3>Number of Mines: <span id="mine-no"></span></h3>
 
 <div id="game">
 </div>
@@ -45,12 +49,14 @@
   const FLAGGED_CELL_STATE = 2
   
 	var board = document.getElementById("game")	
+	var mineNumberElement = document.getElementById("mine-no")	
   var boxSize = 30
 
   var rows = 15
   var columns = 30
   var numberOfCells = rows*columns
   var numberOfMines = Math.floor(numberOfCells/4)
+  mineNumberElement.textContent = numberOfMines
   var mines = new Set();
   
   while (mines.size < numberOfMines) {
@@ -69,7 +75,7 @@
   	for (var i = 0; i < numberOfCells; i++) {
   		var box = document.createElement('div')
   		box.className = "box";
-  		box.setAttribute('data-index', i)
+      box.id =  'cell-' + i
       box.setAttribute('data-state', DEFAULT_CELL_STATE)
       box.setAttribute('data-bomb', getBombNeighboursCount(i))
   		box.onclick = boxClicked
@@ -81,11 +87,15 @@
 	function boxClicked(event) {
 		var box = event.target
     processboxClicked(box)
-		console.log("LC: " + box.getAttribute('data-index'))
+		console.log("LC: " + box.id)
 	};
   
+  function getCellID(box) {
+    return parseInt(box.id.substring(5))
+  }
+  
   function processboxClicked(box) {
-    var index = parseInt(box.getAttribute('data-index'))
+    var index = getCellID(box)
     var state = box.getAttribute('data-state')
     
 		if (state == DEFAULT_CELL_STATE) {
@@ -96,20 +106,30 @@
         box.classList.add("bomb")
       } else {
         // did not click on bomb
-        box.textContent = box.getAttribute('data-bomb')
+        var bombNeighbours = box.getAttribute('data-bomb')
         box.setAttribute('data-state', CLICKED_CELL_STATE)
         box.classList.add("fade")
+        if (bombNeighbours == 0) {
+          // no bomb neighbours, simulate clicking neighbours
+          var neighbours = getNeighbours(index)
+          neighbours.forEach(function(value, key, set) {
+            processboxClicked(document.getElementById("cell-" + value))
+          })
+        } else {
+          // fill in the number of bomb neighbours
+          box.textContent = bombNeighbours
+        }
       }
 		}
   }
 	
   function boxRightClicked(event) {
 		var box = event.target
-    var index = box.getAttribute('data-index')
+    var index = getCellID(box)
     var state = box.getAttribute('data-state')
     
 		if (state == DEFAULT_CELL_STATE) {
-      box.textContent = index
+      // box.textContent = index
       box.setAttribute('data-state', FLAGGED_CELL_STATE)
       box.classList.add("blue")
 		} else if (state == FLAGGED_CELL_STATE) {
@@ -118,7 +138,7 @@
       box.classList.remove("blue")
 		}
 		
-		console.log("RC: " + box.getAttribute('data-index'))
+		console.log("RC: " + box.id)
     return false 
   };
   
