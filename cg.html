@@ -1,0 +1,80 @@
+<style>
+  p {
+    font-size: 16px;
+  }
+  canvas { 
+    border: 1px solid black; 
+  }
+</style>
+
+<h1>Chaos Game<h1>
+
+<p>
+  Click on the box to draw the next point. <br>
+  Press any key to start the auto draw. <br>
+  Press any key again to pause the auto draw. <br>  
+  Each time you start the auto draw, it draws quicker. <br>
+</p>
+<canvas id="chaos-game" width="600" height="400"></canvas>
+
+<p>Inspired by:</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/kbKtFN71Lfs" frameborder="0" allowfullscreen></iframe>
+
+<script>
+  var interval = null
+  var intervalSpeed = 40
+  var canvas = document.getElementById('chaos-game')
+  var ctx = canvas.getContext('2d')
+  
+  canvas.addEventListener('click', drawNextPoint)
+  document.addEventListener('keydown', quickDrawNextPoint)
+  
+  var dotSize = 2
+  var pointA = [300, 50]
+  var pointB = [100, 350]
+  var pointC = [500, 350]
+  var currPoint = [getRandomInt(1,600), getRandomInt(1,400)]
+  var points = [pointA, pointB, pointC] 
+  
+  drawPoint(pointA)
+  drawPoint(pointB)
+  drawPoint(pointC)
+  drawPoint(currPoint)
+  
+  ctx.font = '20px serif'
+  ctx.fillText('A', 296, 40);
+  ctx.fillText('B', 86, 375);
+  ctx.fillText('C', 504, 375);
+  
+  function drawPoint(p) {
+    ctx.fillRect(p[0],p[1],dotSize,dotSize)
+  }
+  
+  function drawNextPoint() {
+    currPoint = getMidPoint(currPoint, points[getRandomInt(0,3)])
+    drawPoint(currPoint)
+  }
+  
+  function quickDrawNextPoint() {
+    if (interval === null) {
+      intervalSpeed *= 0.9
+      interval = setInterval(function() {
+        drawNextPoint()
+      }, intervalSpeed)
+    } else {
+      clearInterval(interval)
+      interval = null
+    }
+  }
+  
+  function getMidPoint(p1, p2) {
+    return [(p1[0]+p2[0])/2, (p1[1]+p2[1])/2]
+  }
+  
+  function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min; 
+    //The maximum is exclusive and the minimum is inclusive
+  }
+</script>
