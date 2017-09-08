@@ -1,3 +1,5 @@
+<!--May want to look at https://stackoverflow.com/a/12886479/1474521 if there are multiple canvases-->
+
 <style>
   p {
     font-size: 16px;
@@ -5,15 +7,21 @@
   canvas { 
     border: 1px solid black; 
   }
+  #auto-draw {
+    margin: 10px;
+    padding: 10px;
+    font-size: 18px;
+  }
 </style>
 
 <h1>Chaos Game<h1>
 
 <p>
-  Click on the box to draw the next point. <br>
+  Click in the box to draw the next point. <br>
   Press any key to start the auto draw. <br>
   Press any key again to pause the auto draw. <br>  
   Each time you start the auto draw, it draws quicker. <br>
+  For mobile, you may want to click -> <button id="auto-draw">Start Auto Draw</button>
 </p>
 <canvas id="chaos-game" width="600" height="400"></canvas>
 
@@ -23,11 +31,13 @@
 <script>
   var interval = null
   var intervalSpeed = 40
+  var autoDrawButton = document.getElementById('auto-draw')
   var canvas = document.getElementById('chaos-game')
   var ctx = canvas.getContext('2d')
   
   canvas.addEventListener('click', drawNextPoint)
   document.addEventListener('keydown', quickDrawNextPoint)
+  autoDrawButton.addEventListener('click', quickDrawNextPoint)
   
   var dotSize = 2
   var pointA = [300, 50]
@@ -57,13 +67,15 @@
   
   function quickDrawNextPoint() {
     if (interval === null) {
-      intervalSpeed *= 0.9
+      intervalSpeed *= 0.8
       interval = setInterval(function() {
         drawNextPoint()
       }, intervalSpeed)
+      autoDrawButton.textContent = "Pause Auto Draw"
     } else {
       clearInterval(interval)
       interval = null
+      autoDrawButton.textContent = "Start Auto Draw"
     }
   }
   
