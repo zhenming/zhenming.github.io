@@ -23,7 +23,7 @@
   Each time you start the auto draw, it draws quicker. <br>
   For mobile, you may want to click -> <button id="auto-draw">Start Auto Draw</button>
 </p>
-<canvas id="chaos-game" width="700" height="600"></canvas>
+<canvas id="chaos-game" width="700" height="540"></canvas>
 
 <p>Inspired by:</p>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/kbKtFN71Lfs" frameborder="0" allowfullscreen></iframe>
@@ -41,8 +41,8 @@
   
   var dotSize = 2
   var pointA = [350, 50]
-  var pointB = [50, 550]
-  var pointC = [650, 550]
+  var pointB = [50, 490]
+  var pointC = [650, 490]
   var currPoint = [getRandomInt(1,700), getRandomInt(1,500)]
   var points = [pointA, pointB, pointC] 
   
@@ -52,11 +52,13 @@
   drawPoint(currPoint)
   
   ctx.font = '20px serif'
+  ctx.fillStyle = 'black';
   ctx.fillText('A', 346, 40);
-  ctx.fillText('B', 36, 575);
-  ctx.fillText('C', 654, 575);
+  ctx.fillText('B', 36, 515);
+  ctx.fillText('C', 654, 515);
   
   function drawPoint(p) {
+    ctx.fillStyle = 'rgb( ' + getRandomInt(0,256) + ', ' + getRandomInt(0,256) + ', ' + getRandomInt(0,256) + ')';
     ctx.fillRect(p[0],p[1],dotSize,dotSize)
   }
   
