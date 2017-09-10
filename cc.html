@@ -1,0 +1,47 @@
+<style>
+  p {
+    font-size: 16px;
+  }
+  #collatz {
+    white-space: pre;
+    display: flex;
+  }
+  .collatz-item {
+    font-size: 10px;
+    padding: 6px;
+    text-align: center;
+  }
+</style>
+
+<h1>Collatz Conjecture<h1>
+
+<div id="collatz">
+</div>
+
+<p>Inspired by:</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/LqKpkdRRLZw" frameborder="0" allowfullscreen></iframe>
+  
+<script>
+  var collatz = document.getElementById('collatz')
+  
+  for (var i = 1; i <= 500; i++) {
+    var n = i
+    var collatzItem = document.createElement("div");
+    collatzItem.className = 'collatz-item'
+    collatzItem.textContent += n + "\r\n"
+    do {
+      n = getNextNumber(n)
+      collatzItem.textContent += n + "\r\n"
+    } while (n != 1)
+    // collatzItem.textContent += "\r\n"
+    collatz.appendChild(collatzItem)
+  }
+  
+  function getNextNumber(n) {
+    if (n % 2 == 0) {
+      return n/2
+    } else {
+      return 3*n + 1
+    }
+  }
+</script>
