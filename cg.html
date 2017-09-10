@@ -23,14 +23,14 @@
   Each time you start the auto draw, it draws quicker. <br>
   For mobile, you may want to click -> <button id="auto-draw">Start Auto Draw</button>
 </p>
-<canvas id="chaos-game" width="600" height="400"></canvas>
+<canvas id="chaos-game" width="700" height="600"></canvas>
 
 <p>Inspired by:</p>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/kbKtFN71Lfs" frameborder="0" allowfullscreen></iframe>
 
 <script>
   var interval = null
-  var intervalSpeed = 40
+  var intervalSpeed = 30
   var autoDrawButton = document.getElementById('auto-draw')
   var canvas = document.getElementById('chaos-game')
   var ctx = canvas.getContext('2d')
@@ -40,10 +40,10 @@
   autoDrawButton.addEventListener('click', quickDrawNextPoint)
   
   var dotSize = 2
-  var pointA = [300, 50]
-  var pointB = [100, 350]
-  var pointC = [500, 350]
-  var currPoint = [getRandomInt(1,600), getRandomInt(1,400)]
+  var pointA = [350, 50]
+  var pointB = [50, 550]
+  var pointC = [650, 550]
+  var currPoint = [getRandomInt(1,700), getRandomInt(1,500)]
   var points = [pointA, pointB, pointC] 
   
   drawPoint(pointA)
@@ -52,9 +52,9 @@
   drawPoint(currPoint)
   
   ctx.font = '20px serif'
-  ctx.fillText('A', 296, 40);
-  ctx.fillText('B', 86, 375);
-  ctx.fillText('C', 504, 375);
+  ctx.fillText('A', 346, 40);
+  ctx.fillText('B', 36, 575);
+  ctx.fillText('C', 654, 575);
   
   function drawPoint(p) {
     ctx.fillRect(p[0],p[1],dotSize,dotSize)
@@ -67,7 +67,7 @@
   
   function quickDrawNextPoint() {
     if (interval === null) {
-      intervalSpeed *= 0.8
+      intervalSpeed *= 0.6
       interval = setInterval(function() {
         drawNextPoint()
       }, intervalSpeed)
