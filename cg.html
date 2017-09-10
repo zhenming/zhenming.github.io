@@ -30,7 +30,7 @@
 
 <script>
   var interval = null
-  var intervalSpeed = 30
+  var intervalSpeed = 60
   var autoDrawButton = document.getElementById('auto-draw')
   var canvas = document.getElementById('chaos-game')
   var ctx = canvas.getContext('2d')
@@ -58,7 +58,7 @@
   ctx.fillText('C', 654, 515);
   
   function drawPoint(p) {
-    ctx.fillStyle = 'rgb( ' + getRandomInt(0,256) + ', ' + getRandomInt(0,256) + ', ' + getRandomInt(0,256) + ')';
+    ctx.fillStyle = getRandomColour()
     ctx.fillRect(p[0],p[1],dotSize,dotSize)
   }
   
@@ -91,4 +91,9 @@
     return Math.floor(Math.random() * (max - min)) + min; 
     //The maximum is exclusive and the minimum is inclusive
   }
+  
+  function getRandomColour(min, max) {
+    return 'rgb( ' + getRandomInt(0,256) + ', ' + getRandomInt(0,256) + ', ' + getRandomInt(0,256) + ')'
+  }
+  
 </script>
