@@ -14,10 +14,8 @@
         <p>{{ test }}</p>
         
         <div class="ms-board">
-            <div class="ms-board__row" v-for="row in cellMatrix">
-                <div class="ms-board__cell" v-for="cell in row">
-                    {{ cell }}
-                </div>
+            <div class="ms-board__row" v-for="(row, x) in cellMatrix">
+                <div class="ms-board__cell" v-for="(cell, y) in row" @click="cellClicked(x, y, $event)"></div>
             </div>
         </div>
     </div>
