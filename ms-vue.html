@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Minesweeper with vue</title>
-
+    
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="css/ms.css" rel="stylesheet">
 </head>
@@ -14,8 +14,8 @@
         <p>{{ test }}</p>
         
         <div class="ms-board">
-            <div class="ms-board__row" v-for="(row, x) in cellMatrix">
-                <div class="ms-board__cell" v-for="(cell, y) in row" @click="cellClicked(x, y, $event)"></div>
+            <div class="ms-board__row" v-for="(row, rowIndex) in cellMatrix">
+                <div class="ms-board__cell" v-for="(cell, colIndex) in row" @click="cellClicked(rowIndex, colIndex, $event)"></div>
             </div>
         </div>
     </div>
@@ -24,4 +24,3 @@
     <script src="js/ms.js"></script>
 </body>
 </html>
-

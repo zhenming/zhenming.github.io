@@ -9,22 +9,25 @@ var vueApp = new Vue({
         cellMatrix: generateCellMatrix(NUMBER_OF_ROWS, NUMBER_OF_COLUMNS, NUMBER_OF_MINES),
     },
     methods: {
-        cellClicked: function(x, y, event) {
-            console.log(x + ', ' + y);
-            event.target.textContent = this.cellMatrix[x][y];
+        cellClicked: function(rowIndex, colIndex, event) {
+            console.log(rowIndex + ', ' + colIndex);
+            event.target.textContent = this.cellMatrix[rowIndex][colIndex];
         }
     },
 });
 
 function generateCellMatrix(numberOfRows, numberOfColumns, numberOfMines) {
     var numberOfCells = numberOfRows * numberOfColumns;
-    var minesSet = getMines(numberOfMines, numberOfCells);
+    var minesSet = generateMines(numberOfMines, numberOfCells);
     var matrix = [];
-    for (var i = 0; i < numberOfRows; i++) {
+    for (var rowIndex = 0; rowIndex < numberOfRows; rowIndex++) {
         var row = [];
-        for (var j = 0; j < numberOfColumns; j++) {
-            var cellIndex = i * numberOfColumns + j
+        for (var colIndex = 0; colIndex < numberOfColumns; colIndex++) {
+            var cellIndex = getCellIndex(rowIndex, colIndex, numberOfColumns);
             if (minesSet.has(cellIndex)) {
+                console.log(cellIndex);
+                console.log(rowIndex + ', ' + colIndex);
+                getNeighbours(rowIndex, colIndex, numberOfRows, numberOfColumns);
                 row.push('X');
             } else {
                 row.push('O');
@@ -35,7 +38,31 @@ function generateCellMatrix(numberOfRows, numberOfColumns, numberOfMines) {
     return matrix;
 }
 
-function getMines(numberOfMines, numberOfCells) {
+function getCellIndex(rowIndex, colIndex, numberOfColumns) {
+    // returns the cell index based on row and column index
+    return rowIndex * numberOfColumns + colIndex;
+}
+
+function getNeighbours(rowIndex, colIndex, numberOfRows, numberOfColumns) {
+    // returns a set of the cell index of the neighbours
+    var neighbourSet = new Set();
+    var allNeighbours = [
+        [rowIndex-1, colIndex-1], [rowIndex-1, colIndex], [rowIndex-1, colIndex+1],
+        [rowIndex, colIndex-1], [rowIndex, colIndex+1],
+        [rowIndex+1, colIndex-1], [rowIndex+1, colIndex], [rowIndex+1, colIndex+1],
+    ];
+    for (var neighbour of allNeighbours) {
+        var rIndex = neighbour[0];
+        var cIndex = neighbour[1];
+        if (rIndex >= 0 && rIndex < numberOfRows && cIndex >= 0 && cIndex < numberOfColumns) {
+            // cell is a valid neighbour, add to neighbour set
+            neighbourSet.add(getCellIndex(rIndex, cIndex, numberOfColumns));
+        }
+    }
+    console.log(neighbourSet);
+}
+
+function generateMines(numberOfMines, numberOfCells) {
     // returns a set of the cell index of the bombs
     var minesSet = new Set();
     while (minesSet.size < numberOfMines) {
