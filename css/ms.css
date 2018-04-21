@@ -1,0 +1,12 @@
+.ms-board {
+    display: flex
+}
+
+.ms-board__row {
+    border: 1px solid red;
+}
+
+.ms-board__cell {
+    border: 1px solid black;
+    padding: 3px;
+}

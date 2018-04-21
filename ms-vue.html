@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Minesweeper with vue</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="css/ms.css" rel="stylesheet">
+</head>
+<body>
+    <h1>Minesweeper with vue</h1>
+    
+    <div id="vue-app">
+        <p>{{ test }}</p>
+        
+        <div class="ms-board">
+            <div class="ms-board__row" v-for="row in cellMatrix">
+                <div class="ms-board__cell" v-for="cell in row">
+                    {{ cell }}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="js/ms.js"></script>
+</body>
+</html>
+
