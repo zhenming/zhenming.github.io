@@ -11,36 +11,50 @@ var vueApp = new Vue({
     methods: {
         cellClicked: function(rowIndex, colIndex, event) {
             console.log(rowIndex + ', ' + colIndex);
-            event.target.textContent = this.cellMatrix[rowIndex][colIndex];
+            var cell = this.cellMatrix[rowIndex][colIndex];
+            if (cell.isMine) {
+                event.target.textContent = "X"
+            } else {
+                event.target.textContent = cell.mineNeighbours;
+            }
         }
     },
 });
 
 function generateCellMatrix(numberOfRows, numberOfColumns, numberOfMines) {
-    var numberOfCells = numberOfRows * numberOfColumns;
-    var minesSet = generateMines(numberOfMines, numberOfCells);
     var matrix = [];
     for (var rowIndex = 0; rowIndex < numberOfRows; rowIndex++) {
         var row = [];
         for (var colIndex = 0; colIndex < numberOfColumns; colIndex++) {
-            var cellIndex = getCellIndex(rowIndex, colIndex, numberOfColumns);
-            if (minesSet.has(cellIndex)) {
-                console.log(cellIndex);
-                console.log(rowIndex + ', ' + colIndex);
-                getNeighbours(rowIndex, colIndex, numberOfRows, numberOfColumns);
-                row.push('X');
-            } else {
-                row.push('O');
-            }
+            row.push({ 
+                isMine: false,
+                mineNeighbours: 0,
+            });
         }
         matrix.push(row);
     }
+    populateMines(matrix, numberOfRows, numberOfColumns, numberOfMines);
     return matrix;
 }
 
-function getCellIndex(rowIndex, colIndex, numberOfColumns) {
-    // returns the cell index based on row and column index
-    return rowIndex * numberOfColumns + colIndex;
+function populateMines(matrix, numberOfRows, numberOfColumns, numberOfMines) {
+    var numberOfCells = numberOfRows * numberOfColumns;
+    var minesSet = generateMines(numberOfMines, numberOfCells);
+    for (mineIndex of minesSet) {
+        var rIndex = getRowIndex(mineIndex, numberOfColumns);
+        var cIndex = getColIndex(mineIndex, numberOfColumns);
+        matrix[rIndex][cIndex].isMine = true;
+        updateMineNumbers(matrix, rIndex, cIndex, numberOfRows, numberOfColumns)
+    }
+}
+
+function updateMineNumbers(matrix, mineRowIndex, mineColIndex, numberOfRows, numberOfColumns) {
+    var neighboursSet = getNeighbours(mineRowIndex, mineColIndex, numberOfRows, numberOfColumns);
+    for (neighbourIndex of neighboursSet) {
+        var rIndex = getRowIndex(neighbourIndex, numberOfColumns);
+        var cIndex = getColIndex(neighbourIndex, numberOfColumns);
+        matrix[rIndex][cIndex].mineNeighbours += 1;
+    }
 }
 
 function getNeighbours(rowIndex, colIndex, numberOfRows, numberOfColumns) {
@@ -59,7 +73,7 @@ function getNeighbours(rowIndex, colIndex, numberOfRows, numberOfColumns) {
             neighbourSet.add(getCellIndex(rIndex, cIndex, numberOfColumns));
         }
     }
-    console.log(neighbourSet);
+    return neighbourSet;
 }
 
 function generateMines(numberOfMines, numberOfCells) {
@@ -70,6 +84,21 @@ function generateMines(numberOfMines, numberOfCells) {
     }
     console.log(minesSet); 
     return minesSet;
+}
+
+function getCellIndex(rowIndex, colIndex, numberOfColumns) {
+    // returns the cell index based on row and column index
+    return rowIndex * numberOfColumns + colIndex;
+}
+
+function getRowIndex(cellIndex, numberOfColumns) {
+    // returns the row index based on cell index
+    return Math.floor(cellIndex/numberOfColumns);
+}
+
+function getColIndex(cellIndex, numberOfColumns) {
+    // returns the column index based on cell index
+    return cellIndex % numberOfColumns;
 }
 
 function getRandomInt(min, max) {
