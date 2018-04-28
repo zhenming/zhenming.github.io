@@ -1,3 +1,7 @@
+[v-cloak] { 
+    display: none; 
+}
+
 .ms-board {
     border: 1px solid black;
     display: flex;
@@ -11,10 +15,15 @@
 }
 
 .ms-board__cell {
+    background-color: #ddd;
     border: 1px solid black;
     cursor: pointer;
     height: 32px;
     line-height: 32px;
     text-align: center;
     width: 32px;    
+}
+
+.ms-board__cell--open {
+    background-color: white;
 }

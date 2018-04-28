@@ -2,33 +2,69 @@ const NUMBER_OF_ROWS = 6;
 const NUMBER_OF_COLUMNS = 6;
 const NUMBER_OF_MINES = 6;
 
+const CELL_STATE_MINE = -2
+const CELL_STATE_SAFE = -1
+const CELL_STATE_BLANK = 0
+const CELL_STATE_FLAG = 1
+
 var vueApp = new Vue({
     el: '#vue-app',
     data: {
         test: "vue work!",
-        cellMatrix: generateCellMatrix(NUMBER_OF_ROWS, NUMBER_OF_COLUMNS, NUMBER_OF_MINES),
+        cellClasses: {
+            [CELL_STATE_MINE]: "ms-board__cell--open",
+            [CELL_STATE_SAFE]: "ms-board__cell--open",
+            [CELL_STATE_BLANK]: '',
+        },
+        cellStates: {
+            mine: CELL_STATE_MINE,
+            safe: CELL_STATE_SAFE,
+            blank: CELL_STATE_BLANK,
+            flag: CELL_STATE_FLAG,
+        },
+        cellMatrix: generateCellMatrix(NUMBER_OF_ROWS, NUMBER_OF_COLUMNS, NUMBER_OF_MINES, CELL_STATE_BLANK),
+        numberOfColumns: NUMBER_OF_COLUMNS,
+        numberOfRows: NUMBER_OF_ROWS, 
     },
     methods: {
         cellClicked: function(rowIndex, colIndex, event) {
-            console.log(rowIndex + ', ' + colIndex);
+            this.cellLeftClicked(rowIndex, colIndex); 
+        },
+        cellLeftClicked: function(rowIndex, colIndex) {
             var cell = this.cellMatrix[rowIndex][colIndex];
-            if (cell.isMine) {
-                event.target.textContent = "X"
-            } else {
-                event.target.textContent = cell.mineNeighbours;
+            // left click, we only process cells with state blank
+            if (cell.state === this.cellStates.blank) {
+                if (cell.isMine) {
+                    cell.state = this.cellStates.mine;
+                } else {
+                    cell.state = this.cellStates.safe;
+                    if (cell.mineNeighbours === 0) {
+                        // cell has no mine neighbours, open all neighbours
+                        this.openAllNeighbours(rowIndex, colIndex)
+                    }  
+                }
+            }
+        },
+        openAllNeighbours: function(rowIndex, colIndex) {
+            var neighboursSet = getNeighbours(rowIndex, colIndex, this.numberOfRows, this.numberOfColumns);
+            for (neighbourIndex of neighboursSet) {
+                var rIndex = getRowIndex(neighbourIndex, this.numberOfColumns);
+                var cIndex = getColIndex(neighbourIndex, this.numberOfColumns);
+                this.cellLeftClicked(rIndex, cIndex); 
             }
         }
     },
 });
 
-function generateCellMatrix(numberOfRows, numberOfColumns, numberOfMines) {
+function generateCellMatrix(numberOfRows, numberOfColumns, numberOfMines, initialCellState) {
     var matrix = [];
     for (var rowIndex = 0; rowIndex < numberOfRows; rowIndex++) {
         var row = [];
         for (var colIndex = 0; colIndex < numberOfColumns; colIndex++) {
-            row.push({ 
+            row.push({
                 isMine: false,
                 mineNeighbours: 0,
+                state: initialCellState,
             });
         }
         matrix.push(row);
