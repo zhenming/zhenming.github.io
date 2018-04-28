@@ -2,6 +2,19 @@
     display: none; 
 }
 
+.ms-information {
+    display: flex;
+    margin-bottom: 28px
+}
+
+.ms-information p {
+    margin: 0 30px;
+}
+
+.ms-information p:first-child {
+    margin-left: 6px;
+}
+
 .ms-board {
     border: 1px solid black;
     display: flex;
@@ -26,4 +39,12 @@
 
 .ms-board__cell--open {
     background-color: white;
+}
+
+.ms-board__cell--flag {
+    background-color: #eee;
+}
+
+.ms-board__cell--mine {
+    background-color: red;
 }

@@ -11,13 +11,22 @@
     <h1>Minesweeper with vue</h1>
     
     <div id="vue-app" v-cloak>
-        <p>{{ test }}</p>
-        
+        <div class="ms-information">
+            <p>Rows: {{ numberOfRows }}</p>
+            <p>Columns: {{ numberOfColumns }}</p>
+            <p>Mines: {{ numberOfMines }}</p>
+        </div>
+
         <div class="ms-board">
             <div class="ms-board__row" v-for="(row, rowIndex) in cellMatrix">
-                <div v-for="(cell, colIndex) in row" class="ms-board__cell" :class="cellClasses[cell.state]" @click="cellClicked(rowIndex, colIndex, $event)">
+                <div v-for="(cell, colIndex) in row" class="ms-board__cell" :class="cellClasses[cell.state]" 
+                    @click="cellLeftClicked(rowIndex, colIndex)" 
+                    @contextmenu.prevent="cellRightClicked(rowIndex, colIndex)">
                     <template v-if="cell.state === cellStates.safe">
                         {{ cell.mineNeighbours === 0 ? '' : cell.mineNeighbours }}
+                    </template>
+                    <template v-else-if="cell.state === cellStates.flag">
+                        F
                     </template>
                     <template v-else-if="cell.state === cellStates.mine">
                         X

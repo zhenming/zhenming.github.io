@@ -1,5 +1,5 @@
-const NUMBER_OF_ROWS = 6;
-const NUMBER_OF_COLUMNS = 6;
+const NUMBER_OF_ROWS = 10;
+const NUMBER_OF_COLUMNS = 10;
 const NUMBER_OF_MINES = 6;
 
 const CELL_STATE_MINE = -2
@@ -10,11 +10,11 @@ const CELL_STATE_FLAG = 1
 var vueApp = new Vue({
     el: '#vue-app',
     data: {
-        test: "vue work!",
         cellClasses: {
-            [CELL_STATE_MINE]: "ms-board__cell--open",
+            [CELL_STATE_MINE]: "ms-board__cell--mine",
             [CELL_STATE_SAFE]: "ms-board__cell--open",
             [CELL_STATE_BLANK]: '',
+            [CELL_STATE_FLAG]: 'ms-board__cell--flag',
         },
         cellStates: {
             mine: CELL_STATE_MINE,
@@ -24,12 +24,10 @@ var vueApp = new Vue({
         },
         cellMatrix: generateCellMatrix(NUMBER_OF_ROWS, NUMBER_OF_COLUMNS, NUMBER_OF_MINES, CELL_STATE_BLANK),
         numberOfColumns: NUMBER_OF_COLUMNS,
-        numberOfRows: NUMBER_OF_ROWS, 
+        numberOfRows: NUMBER_OF_ROWS,
+        numberOfMines: NUMBER_OF_MINES, 
     },
     methods: {
-        cellClicked: function(rowIndex, colIndex, event) {
-            this.cellLeftClicked(rowIndex, colIndex); 
-        },
         cellLeftClicked: function(rowIndex, colIndex) {
             var cell = this.cellMatrix[rowIndex][colIndex];
             // left click, we only process cells with state blank
@@ -43,6 +41,15 @@ var vueApp = new Vue({
                         this.openAllNeighbours(rowIndex, colIndex)
                     }  
                 }
+            }
+        },
+        cellRightClicked: function(rowIndex, colIndex) {
+            var cell = this.cellMatrix[rowIndex][colIndex];
+            // right click, we only process cells with state blank or state flag
+            if (cell.state === this.cellStates.blank) {
+                cell.state = this.cellStates.flag;
+            } else if (cell.state === this.cellStates.flag) {
+                cell.state = this.cellStates.blank;
             }
         },
         openAllNeighbours: function(rowIndex, colIndex) {
