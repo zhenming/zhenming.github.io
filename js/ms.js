@@ -2,14 +2,27 @@ const NUMBER_OF_ROWS = 10;
 const NUMBER_OF_COLUMNS = 10;
 const NUMBER_OF_MINES = 6;
 
-const CELL_STATE_MINE = -2
-const CELL_STATE_SAFE = -1
-const CELL_STATE_BLANK = 0
-const CELL_STATE_FLAG = 1
+const CELL_STATE_MINE = -2;
+const CELL_STATE_SAFE = -1;
+const CELL_STATE_BLANK = 0;
+const CELL_STATE_FLAG = 1;
+
+const GAME_STATE_INITIAL = 0;
+const GAME_STATE_PLAY = 1;
+
 
 var vueApp = new Vue({
     el: '#vue-app',
     data: {
+        gameState: GAME_STATE_INITIAL,
+        gameStates: {
+            initial: GAME_STATE_INITIAL,
+            play: GAME_STATE_PLAY,
+        },
+        boardClasses: {
+            [GAME_STATE_INITIAL]: "ms-board--end",
+            [GAME_STATE_PLAY]: "",
+        },
         cellClasses: {
             [CELL_STATE_MINE]: "ms-board__cell--mine",
             [CELL_STATE_SAFE]: "ms-board__cell--open",
@@ -22,12 +35,36 @@ var vueApp = new Vue({
             blank: CELL_STATE_BLANK,
             flag: CELL_STATE_FLAG,
         },
-        cellMatrix: generateCellMatrix(NUMBER_OF_ROWS, NUMBER_OF_COLUMNS, NUMBER_OF_MINES, CELL_STATE_BLANK),
+        cellMatrix: [],
         numberOfColumns: NUMBER_OF_COLUMNS,
         numberOfRows: NUMBER_OF_ROWS,
-        numberOfMines: NUMBER_OF_MINES, 
+        numberOfMines: NUMBER_OF_MINES,
+        initialCellState: CELL_STATE_BLANK,
     },
     methods: {
+        startGame: function() {
+            this.gameState = this.gameStates.play;
+            this.generateCellMatrix();
+        },
+        endGame: function() {
+            this.gameState = this.gameStates.initial;
+        },
+        generateCellMatrix: function() {
+            var matrix = [];
+            for (var rowIndex = 0; rowIndex < this.numberOfRows; rowIndex++) {
+                var row = [];
+                for (var colIndex = 0; colIndex < this.numberOfColumns; colIndex++) {
+                    row.push({
+                        isMine: false,
+                        mineNeighbours: 0,
+                        state: this.initialCellState,
+                    });
+                }
+                matrix.push(row);
+            }
+            populateMines(matrix, this.numberOfRows, this.numberOfColumns, this.numberOfMines);
+            this.cellMatrix = matrix;
+        },
         cellLeftClicked: function(rowIndex, colIndex) {
             var cell = this.cellMatrix[rowIndex][colIndex];
             // left click, we only process cells with state blank
@@ -59,7 +96,7 @@ var vueApp = new Vue({
                 var cIndex = getColIndex(neighbourIndex, this.numberOfColumns);
                 this.cellLeftClicked(rIndex, cIndex); 
             }
-        }
+        },
     },
 });
 

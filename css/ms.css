@@ -2,17 +2,37 @@
     display: none; 
 }
 
+input {
+    font-size: 14px;
+    height: 18px;
+    padding: 2px 4px;
+    width: 40px;
+}
+
 .ms-information {
     display: flex;
-    margin-bottom: 28px
 }
 
-.ms-information p {
-    margin: 0 30px;
+.ms-information div {
+    margin: 0 12px;
 }
 
-.ms-information p:first-child {
+.ms-information div:first-child {
     margin-left: 6px;
+}
+
+.ms-buttons {
+    margin: 18px 0;
+}
+
+.button {
+    background-color: #eee;
+    border: 1px solid #444;
+    border-radius: 12px;
+    display: inline-block;
+    cursor: pointer;
+    margin: 0 6px;
+    padding: 15px;
 }
 
 .ms-board {
@@ -20,6 +40,11 @@
     display: flex;
     flex-direction: column;
     width: fit-content; 
+}
+
+.ms-board--end {
+    opacity: 0.4;
+    pointer-events: none;
 }
 
 .ms-board__row {
@@ -48,3 +73,4 @@
 .ms-board__cell--mine {
     background-color: red;
 }
+
