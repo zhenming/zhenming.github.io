@@ -2,6 +2,7 @@ const NUMBER_OF_ROWS = 15;
 const NUMBER_OF_COLUMNS = 10;
 const NUMBER_OF_MINES = 15;
 
+const CELL_STATE_DISPLAY_MINE = -3;
 const CELL_STATE_MINE = -2;
 const CELL_STATE_SAFE = -1;
 const CELL_STATE_BLANK = 0;
@@ -29,12 +30,14 @@ var vueApp = new Vue({
             [GAME_STATE_LOSS]: "ms-board--end",
         },
         cellClasses: {
+            [CELL_STATE_DISPLAY_MINE]: "ms-board__cell--mine-display",
             [CELL_STATE_MINE]: "ms-board__cell--mine",
             [CELL_STATE_SAFE]: "ms-board__cell--open",
             [CELL_STATE_BLANK]: '',
             [CELL_STATE_FLAG]: 'ms-board__cell--flag',
         },
         cellStates: {
+            displayMine: CELL_STATE_DISPLAY_MINE,
             mine: CELL_STATE_MINE,
             safe: CELL_STATE_SAFE,
             blank: CELL_STATE_BLANK,
@@ -46,6 +49,7 @@ var vueApp = new Vue({
         numberOfMines: NUMBER_OF_MINES,
         initialCellState: CELL_STATE_BLANK,
         numberOfMinesRemaining: 0,
+        minesSet: [],
     },
     methods: {
         startGame: function() {
@@ -58,9 +62,11 @@ var vueApp = new Vue({
         },
         winGame: function() {
             this.gameState = this.gameStates.win;
+            this.displayMines();
         },
         loseGame: function() {
             this.gameState = this.gameStates.loss;
+            this.displayMines();
         },
         generateCellMatrix: function() {
             var matrix = [];
@@ -75,8 +81,35 @@ var vueApp = new Vue({
                 }
                 matrix.push(row);
             }
-            populateMines(matrix, this.numberOfRows, this.numberOfColumns, this.numberOfMines);
             this.cellMatrix = matrix;
+            this.populateMines();
+        },
+        populateMines: function() {
+            this.generateMines();
+            for (mineIndex of this.minesSet) {
+                this.cellMatrix[mineIndex[0]][mineIndex[1]].isMine = true;
+                updateMineNumbers(this.cellMatrix, mineIndex[0], mineIndex[1], this.numberOfRows, this.numberOfColumns)
+            }
+        },
+        generateMines: function() {
+            // returns a set of the cell index of the bombs
+            this.minesSet = new Set();
+            while (this.minesSet.size < this.numberOfMines) {
+                this.minesSet.add([
+                    getRandomInt(0, this.numberOfRows),
+                    getRandomInt(0, this.numberOfColumns),
+                ]);
+            }
+            console.log(this.minesSet); 
+        },
+        displayMines: function() {
+            // show all mines that are not opened
+            for (mineIndex of this.minesSet) {
+                var cell = this.cellMatrix[mineIndex[0]][mineIndex[1]];
+                if (cell.state === this.cellStates.blank) {
+                    cell.state = this.cellStates.displayMine;
+                }
+            }
         },
         cellLeftClicked: function(rowIndex, colIndex) {
             var cell = this.cellMatrix[rowIndex][colIndex];
@@ -134,34 +167,6 @@ var vueApp = new Vue({
     },
 });
 
-function generateCellMatrix(numberOfRows, numberOfColumns, numberOfMines, initialCellState) {
-    var matrix = [];
-    for (var rowIndex = 0; rowIndex < numberOfRows; rowIndex++) {
-        var row = [];
-        for (var colIndex = 0; colIndex < numberOfColumns; colIndex++) {
-            row.push({
-                isMine: false,
-                mineNeighbours: 0,
-                state: initialCellState,
-            });
-        }
-        matrix.push(row);
-    }
-    populateMines(matrix, numberOfRows, numberOfColumns, numberOfMines);
-    return matrix;
-}
-
-function populateMines(matrix, numberOfRows, numberOfColumns, numberOfMines) {
-    var numberOfCells = numberOfRows * numberOfColumns;
-    var minesSet = generateMines(numberOfMines, numberOfCells);
-    for (mineIndex of minesSet) {
-        var rIndex = getRowIndex(mineIndex, numberOfColumns);
-        var cIndex = getColIndex(mineIndex, numberOfColumns);
-        matrix[rIndex][cIndex].isMine = true;
-        updateMineNumbers(matrix, rIndex, cIndex, numberOfRows, numberOfColumns)
-    }
-}
-
 function updateMineNumbers(matrix, mineRowIndex, mineColIndex, numberOfRows, numberOfColumns) {
     var neighboursSet = getNeighbours(mineRowIndex, mineColIndex, numberOfRows, numberOfColumns);
     for (neighbourIndex of neighboursSet) {
@@ -188,16 +193,6 @@ function getNeighbours(rowIndex, colIndex, numberOfRows, numberOfColumns) {
         }
     }
     return neighbourSet;
-}
-
-function generateMines(numberOfMines, numberOfCells) {
-    // returns a set of the cell index of the bombs
-    var minesSet = new Set();
-    while (minesSet.size < numberOfMines) {
-        minesSet.add(getRandomInt(0, numberOfCells));
-    }
-    console.log(minesSet); 
-    return minesSet;
 }
 
 function getCellIndex(rowIndex, colIndex, numberOfColumns) {

@@ -92,3 +92,7 @@ input {
     background-color: red;
 }
 
+.ms-board__cell--mine-display {
+    background-color: #3ea99f;
+}
+
