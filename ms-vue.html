@@ -36,6 +36,8 @@
                 <label>Mines remaining:</label>
                 <span>{{ numberOfMinesRemaining }}</span>
             </div>
+            <p class="ms-win-text" v-if="gameState === gameStates.win">You Won!</p>
+            <p class="ms-loss-text" v-if="gameState === gameStates.loss">You Lost!</p>
         </div>
 
         <div class="ms-board" :class="boardClasses[gameState]" v-if="cellMatrix.length">

@@ -36,7 +36,20 @@ input {
 }
 
 .ms-information {
+    display: flex;
     margin: 18px 0;
+}
+
+.ms-information p {
+    margin: 0 12px;
+}
+
+.ms-win-text {
+    color:  green;
+}
+
+.ms-loss-text {
+    color:  red;
 }
 
 .ms-board {

@@ -9,7 +9,8 @@ const CELL_STATE_FLAG = 1;
 
 const GAME_STATE_INITIAL = 0;
 const GAME_STATE_PLAY = 1;
-
+const GAME_STATE_WIN = 2;
+const GAME_STATE_LOSS = 3;
 
 var vueApp = new Vue({
     el: '#vue-app',
@@ -18,10 +19,14 @@ var vueApp = new Vue({
         gameStates: {
             initial: GAME_STATE_INITIAL,
             play: GAME_STATE_PLAY,
+            win: GAME_STATE_WIN,
+            loss: GAME_STATE_LOSS,
         },
         boardClasses: {
             [GAME_STATE_INITIAL]: "ms-board--end",
             [GAME_STATE_PLAY]: "",
+            [GAME_STATE_WIN]: "ms-board--end",
+            [GAME_STATE_LOSS]: "ms-board--end",
         },
         cellClasses: {
             [CELL_STATE_MINE]: "ms-board__cell--mine",
@@ -51,6 +56,12 @@ var vueApp = new Vue({
         endGame: function() {
             this.gameState = this.gameStates.initial;
         },
+        winGame: function() {
+            this.gameState = this.gameStates.win;
+        },
+        loseGame: function() {
+            this.gameState = this.gameStates.loss;
+        },
         generateCellMatrix: function() {
             var matrix = [];
             for (var rowIndex = 0; rowIndex < this.numberOfRows; rowIndex++) {
@@ -73,13 +84,16 @@ var vueApp = new Vue({
             if (cell.state === this.cellStates.blank) {
                 if (cell.isMine) {
                     cell.state = this.cellStates.mine;
-                    this.numberOfMinesRemaining -= 1;
+                    this.loseGame();
                 } else {
                     cell.state = this.cellStates.safe;
                     if (cell.mineNeighbours === 0) {
                         // cell has no mine neighbours, open all neighbours
                         this.openAllNeighbours(rowIndex, colIndex)
-                    }  
+                    }
+                    if (this.gameWon()) {
+                        this.winGame();
+                    }
                 }
             }
         },
@@ -102,6 +116,21 @@ var vueApp = new Vue({
                 this.cellLeftClicked(rIndex, cIndex); 
             }
         },
+        gameWon: function() {
+            // return true if all cells that are not mine are in the safe state
+            // i.e. all non mine cell has been opened
+            for (var rowIndex = 0; rowIndex < this.numberOfRows; rowIndex++) {
+                for (var colIndex = 0; colIndex < this.numberOfColumns; colIndex++) {
+                    var cell = this.cellMatrix[rowIndex][colIndex];
+                    if (!cell.isMine && cell.state !== this.cellStates.safe) {
+                        // there exist non mine cell that is still not in safe state
+                        return false;
+                    }
+                }
+            }
+            // all non mine cells are in safe state
+            return true;
+        }
     },
 });
 
