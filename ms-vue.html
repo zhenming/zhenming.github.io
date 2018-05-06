@@ -11,7 +11,7 @@
     <h1>Minesweeper with vue</h1>
     
     <div id="vue-app" v-cloak>
-        <div class="ms-information">
+        <div class="ms-configuration">
             <div>
                 <label>Rows:</label>
                 <input type="number" v-model="numberOfRows" :disabled="gameState === gameStates.play">
@@ -29,6 +29,13 @@
         <div class="ms-buttons">
             <a class="button" @click="startGame" v-show="gameState !== gameStates.play">Generate Board</a>
             <a class="button" @click="endGame" v-show="gameState === gameStates.play">End Game</a>
+        </div>
+
+        <div class="ms-information">
+            <div>
+                <label>Mines remaining:</label>
+                <span>{{ numberOfMinesRemaining }}</span>
+            </div>
         </div>
 
         <div class="ms-board" :class="boardClasses[gameState]" v-if="cellMatrix.length">

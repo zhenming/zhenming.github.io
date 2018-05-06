@@ -1,6 +1,6 @@
-const NUMBER_OF_ROWS = 10;
+const NUMBER_OF_ROWS = 15;
 const NUMBER_OF_COLUMNS = 10;
-const NUMBER_OF_MINES = 6;
+const NUMBER_OF_MINES = 15;
 
 const CELL_STATE_MINE = -2;
 const CELL_STATE_SAFE = -1;
@@ -40,11 +40,13 @@ var vueApp = new Vue({
         numberOfRows: NUMBER_OF_ROWS,
         numberOfMines: NUMBER_OF_MINES,
         initialCellState: CELL_STATE_BLANK,
+        numberOfMinesRemaining: 0,
     },
     methods: {
         startGame: function() {
             this.gameState = this.gameStates.play;
             this.generateCellMatrix();
+            this.numberOfMinesRemaining = this.numberOfMines;
         },
         endGame: function() {
             this.gameState = this.gameStates.initial;
@@ -71,6 +73,7 @@ var vueApp = new Vue({
             if (cell.state === this.cellStates.blank) {
                 if (cell.isMine) {
                     cell.state = this.cellStates.mine;
+                    this.numberOfMinesRemaining -= 1;
                 } else {
                     cell.state = this.cellStates.safe;
                     if (cell.mineNeighbours === 0) {
@@ -85,8 +88,10 @@ var vueApp = new Vue({
             // right click, we only process cells with state blank or state flag
             if (cell.state === this.cellStates.blank) {
                 cell.state = this.cellStates.flag;
+                this.numberOfMinesRemaining -= 1;
             } else if (cell.state === this.cellStates.flag) {
                 cell.state = this.cellStates.blank;
+                this.numberOfMinesRemaining += 1;
             }
         },
         openAllNeighbours: function(rowIndex, colIndex) {

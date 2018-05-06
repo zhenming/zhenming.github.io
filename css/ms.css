@@ -9,15 +9,15 @@ input {
     width: 40px;
 }
 
-.ms-information {
+.ms-configuration {
     display: flex;
 }
 
-.ms-information div {
+.ms-configuration div {
     margin: 0 12px;
 }
 
-.ms-information div:first-child {
+.ms-configuration div:first-child {
     margin-left: 6px;
 }
 
@@ -33,6 +33,10 @@ input {
     cursor: pointer;
     margin: 0 6px;
     padding: 15px;
+}
+
+.ms-information {
+    margin: 18px 0;
 }
 
 .ms-board {
@@ -67,7 +71,8 @@ input {
 }
 
 .ms-board__cell--flag {
-    background-color: #eee;
+    background-color: #737ca1;
+    color: white;
 }
 
 .ms-board__cell--mine {
