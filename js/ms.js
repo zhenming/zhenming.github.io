@@ -93,11 +93,16 @@ var vueApp = new Vue({
         },
         generateMines: function() {
             // returns a set of the cell index of the bombs
+            var minesIndexSet = new Set();
+            var numberOfCells = this.numberOfRows * this.numberOfColumns;
+            while (minesIndexSet.size < this.numberOfMines) {
+                minesIndexSet.add(getRandomInt(0, numberOfCells));
+            }
             this.minesSet = new Set();
-            while (this.minesSet.size < this.numberOfMines) {
+            for (let mineIndex of minesIndexSet) {
                 this.minesSet.add([
-                    getRandomInt(0, this.numberOfRows),
-                    getRandomInt(0, this.numberOfColumns),
+                    getRowIndex(mineIndex, this.numberOfColumns),
+                    getColIndex(mineIndex, this.numberOfColumns),
                 ]);
             }
             console.log(this.minesSet); 
